@@ -121,6 +121,13 @@ It is possible to access the C128 top-row cursor keys, and the numpad keys on a 
 
 <kbd>Shift lock</kbd> can be activated by pressing <kbd>AltGr</kbd>+<kbd>Shift</kbd>. This is a toggle, to release <kbd>Shift lock</kbd>, press the <kbd>AltGr</kbd>+<kbd>Shift</kbd> combination again.
 
+#### Keyboard layout
+*Input devices* → *Keyboard Layout* selects how the character keys are mapped:
+* *Original* (default) - the mapping described here: keys mostly by their position on the C128 keyboard.
+* *US*, *UK*, *DE* - symbolic: the character printed on the PC key is what the C128 gets, and <kbd>Shift</kbd> is pressed or released automatically where the two keyboards differ. On a US keyboard <kbd>Shift</kbd>+<kbd>'</kbd> gives `"`, <kbd>Shift</kbd>+<kbd>;</kbd> gives `:`, <kbd>Shift</kbd>+<kbd>2</kbd> gives `@`, <kbd>=</kbd> and <kbd>Shift</kbd>+<kbd>=</kbd> give `=` and `+`. *DE* also swaps <kbd>Y</kbd> and <kbd>Z</kbd>.
+
+Only the character keys change (digits and symbols, <kbd>F9</kbd>/<kbd>F10</kbd>, and in C64 mode the numpad); all other keys, the <kbd>AltGr</kbd> functions included, work as described above. <kbd>AltGr</kbd> combinations use the C128 key the PC key produces, e.g. numpad <kbd>+</kbd> is <kbd>AltGr</kbd>+<kbd>Shift</kbd>+<kbd>=</kbd> on a US keyboard. The symbolic layouts assume the C128's ASCII mode (not <kbd>ASCII/DIN</kbd> on). The graphics characters on <kbd>Shift</kbd>+ a symbol key (e.g. <kbd>Shift</kbd>+<kbd>+</kbd>) cannot be typed in the symbolic layouts, as the PC needs <kbd>Shift</kbd> to type some of those symbols; <kbd>C=</kbd>+ the key still works.
+
 ![keyboard-mapping](https://github.com/mister-devel/C128_MiSTer/blob/master/keymap.gif)
 
 Keys marked in blue are the keys sent when combined with <kbd>AltGr</kbd>.

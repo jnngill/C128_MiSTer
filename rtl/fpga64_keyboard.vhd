@@ -51,6 +51,13 @@ entity fpga64_keyboard is
 		shift_mod   : in std_logic_vector(1 downto 0);
 		azerty      : in std_logic;  -- when set, modify layout for AZERTY keyboard in DIN mode
 
+		-- symbolic layouts (c128_keyboard_sym): the character keys come from there
+		sym_en        : in std_logic := '0';
+		sym_keys      : in std_logic_vector(63 downto 0) := (others => '0');
+		sym_shift_off : in std_logic := '0';  -- release SHIFT for the key held
+		sym_shift_on  : in std_logic := '0';  -- press SHIFT for the key held
+		sym_owns      : in std_logic := '0';  -- the PS/2 key on ps2_key is c128_keyboard_sym's
+
 		pai         : in unsigned(7 downto 0);
 		pbi         : in unsigned(7 downto 0);
 		pao         : out unsigned(7 downto 0);
@@ -319,7 +326,7 @@ begin
 						or ((key_left or key_up) and not key_fn_crsr)
 						or ((key_F2 or key_F4 or key_F6 or key_F8) and not key_fn)
 					) and shift_mod(1))
-					or ((key_shiftl or shift_lock_state) and not key_8s)
+					or ((key_shiftl or shift_lock_state) and not key_8s and not (sym_en and sym_shift_off))
 				))));
 			pao(2) <= pai(2) and joyB(2) and
 				((not backwardsReadingEnabled) or
@@ -372,7 +379,7 @@ begin
 						or ((key_left or key_up) and not key_fn_crsr)
 						or ((key_F2 or key_F4 or key_F6 or key_F8) and not key_fn)
 					) and shift_mod(0))
-					or (key_shiftr and not key_8s)
+					or (key_shiftr and not key_8s and not (sym_en and sym_shift_off)) or (sym_en and sym_shift_on)
 				)) and
 				(pbi(5) or not key_equal) and
 				(pbi(6) or not key_arrowup) and
@@ -450,7 +457,7 @@ begin
 						or ((key_left or key_up) and not key_fn_crsr)
 						or ((key_F2 or key_F4 or key_F6 or key_F8) and not key_fn)
 					) and shift_mod(0))
-					or (key_shiftr and not key_8s)
+					or (key_shiftr and not key_8s and not (sym_en and sym_shift_off)) or (sym_en and sym_shift_on)
 				)) and
 				(pai(7) or not ((key_space and not key_fn) or not joyA(5) or not joyB(5))) and
 				(ki(0) or not (key_num2 or (key_2 and key_fn))) and
@@ -488,7 +495,7 @@ begin
 						or ((key_left or key_up) and not key_fn_crsr)
 						or ((key_F2 or key_F4 or key_F6 or key_F8) and not key_fn)
 					) and shift_mod(1))
-					or ((key_shiftl or shift_lock_state) and not key_8s)
+					or ((key_shiftl or shift_lock_state) and not key_8s and not (sym_en and sym_shift_off))
 				)) and
 				(pai(2) or not key_X) and
 				(pai(3) or not key_V) and
@@ -500,7 +507,7 @@ begin
 				(ki(1) or not (key_num3 or (key_3 and key_fn))) and
 				(ki(2) or not (key_noscroll or noscroll_lock or (key_F8 and key_fn)));
 
-			if ps2_key(10) /= ps2_stb then
+			if ps2_key(10) /= ps2_stb and (sym_en = '0' or sym_owns = '0') then
 				case ps2_key(8 downto 0) is
 					when "0" & X"01" => key_arrowup <= pressed; -- F9
 					when "0" & X"03" => key_F5 <= pressed;
@@ -632,6 +639,37 @@ begin
 			-- shift-0 to shift-9
 			key_9  <= (phys_9 and not key_shift) or (phys_0 and key_shift);
 			key_0  <=  phys_0 and not key_shift;
+
+			-- symbolic layout (OSD "Keyboard Layout" US / UK / DE): the character
+			-- keys come from c128_keyboard_sym, which also presses or releases SHIFT
+			if sym_en = '1' then
+				key_0 <= sym_keys(35);
+				key_1 <= sym_keys(56);
+				key_2 <= sym_keys(59);
+				key_3 <= sym_keys(8);
+				key_4 <= sym_keys(11);
+				key_5 <= sym_keys(16);
+				key_6 <= sym_keys(19);
+				key_7 <= sym_keys(24);
+				key_8 <= sym_keys(27);
+				key_9 <= sym_keys(32);
+				key_plus <= sym_keys(40);
+				key_minus <= sym_keys(43);
+				key_at <= sym_keys(46);
+				key_star <= sym_keys(49);
+				key_equal <= sym_keys(53);
+				key_colon <= sym_keys(45);
+				key_semicolon <= sym_keys(50);
+				key_comma <= sym_keys(47);
+				key_dot <= sym_keys(44);
+				key_slash <= sym_keys(55);
+				key_pound <= sym_keys(48);
+				key_arrowup <= sym_keys(54);
+				key_arrowleft <= sym_keys(57);
+				key_Y <= sym_keys(25);
+				key_Z <= sym_keys(12);
+				key_8s <= '0';
+			end if;
 
 			if reset = '1' then
 					key_F1        <= '0';

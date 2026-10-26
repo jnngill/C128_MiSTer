@@ -152,6 +152,7 @@ localparam CONF_STR = {
 	"P4O[88:87],SNAC Joystick,Disabled,Joy 1,Joy 2;",
    "P4-;",
    "P4O[60:59],Key modifier,L+R Shift,L Shift,R Shift;",
+   "P4O[98:97],Keyboard Layout,Original,US,UK,DE;",
    "HCP4O[109:108],Caps Lock mode,Auto,Caps Lock,ASCII/DIN;",
    "P4-;",
    "P4O[1],Release Keys on Reset,Yes,No;",
@@ -1255,6 +1256,22 @@ wire        c64_iec_clk_i;
 wire        c64_iec_data_i;
 wire        c64_iec_srq_n_i;
 
+// symbolic keyboard layouts (OSD "Keyboard Layout"): the key cap legend is what the C128 gets
+wire [63:0] sym_keys;
+wire        sym_shift_off, sym_shift_on, sym_owns;
+c128_keyboard_sym kbd_sym
+(
+   .clk(clk_sys),
+   .reset((~reset_n & ~status[1]) | reset_keys),
+   .layout(status[98:97]),
+   .pure64(pure64),
+   .ps2_key(key),
+   .keys_out(sym_keys),
+   .shift_off(sym_shift_off),
+   .shift_on(sym_shift_on),
+   .owns(sym_owns)
+);
+
 fpga64_sid_iec #(
 `ifdef REDUCE_VDC_RAM
    .VDC_ADDR_BITS(14)
@@ -1294,6 +1311,11 @@ fpga64_sid_iec #(
    .kbd_reset((~reset_n & ~status[1]) | reset_keys),
    .shift_mod(~status[60:59]),
    .azerty(cfg_azerty),
+   .sym_en(|status[98:97]),
+   .sym_keys(sym_keys),
+   .sym_shift_off(sym_shift_off),
+   .sym_shift_on(sym_shift_on),
+   .sym_owns(sym_owns),
    .cpslk_mode(cpslk_mode),
    .sftlk_sense(sftlk_sense),
    .cpslk_sense(cpslk_sense),

@@ -61,6 +61,11 @@ port(
    kbd_reset   : in  std_logic := '0';
    shift_mod   : in  std_logic_vector(1 downto 0);
    azerty      : in  std_logic;
+   sym_en        : in  std_logic := '0';
+   sym_keys      : in  std_logic_vector(63 downto 0) := (others => '0');
+   sym_shift_off : in  std_logic := '0';
+   sym_shift_on  : in  std_logic := '0';
+   sym_owns      : in  std_logic := '0';
    cpslk_mode  : in  std_logic;
    sftlk_sense : out std_logic;
    cpslk_sense : out std_logic;
@@ -1358,6 +1363,11 @@ port map (
    alt_crsr => cpuBusAkT80_n,
    shift_mod => shift_mod,
    azerty => azerty,
+   sym_en => sym_en,
+   sym_keys => sym_keys,
+   sym_shift_off => sym_shift_off,
+   sym_shift_on => sym_shift_on,
+   sym_owns => sym_owns,
 
    restore_key => freeze_key,
    tape_play => tape_play,
